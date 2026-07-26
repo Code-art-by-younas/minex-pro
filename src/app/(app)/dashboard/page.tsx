@@ -359,8 +359,9 @@ export default async function DashboardPage() {
                             <Wallet className="h-4 w-4 text-aqua-400" />
                           )}
                         </span>
-                        <span className="text-sm font-semibold text-white">
-                          {tx.type} {/* ✅ Directly showing type */}
+                        {/* ✅ No TX_LABELS – Directly showing tx.type */}
+                        <span className="text-sm font-semibold text-white capitalize">
+                          {tx.type}
                         </span>
                       </div>
                     </td>
