@@ -25,7 +25,7 @@ import {
   getTransactions,
   getWalletTotals,
 } from "@/lib/data";
-import { dateLabel, hashRate, n, pkr } from "@/lib/utils"; // ✅ TX_LABELS removed
+import { dateLabel, hashRate, n, pkr } from "@/lib/utils";
 import { db } from "@/db";
 import { dailyCheckins, users } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -44,7 +44,6 @@ export default async function DashboardPage() {
     getEarningsSeries(user.id),
   ]);
 
-  // ✅ Check if user already checked in today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
@@ -72,7 +71,6 @@ export default async function DashboardPage() {
   const streak = streakData[0]?.streak || 0;
   const hasCheckedIn = todayCheckin.length > 0;
 
-  // ✅ Provide default when plan is null
   const dailyProfit = n(plan?.dailyProfit ?? 0);
   const running = session ? new Date(session.endsAt).getTime() > Date.now() : false;
   const progress = session
@@ -109,7 +107,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      {/* Welcome Section */}
       <GlassCard glow="green" className="relative overflow-hidden p-6 sm:p-8">
         <div className="pointer-events-none absolute inset-0 grid-lines opacity-50" />
         <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-neon-500/15 blur-3xl" />
@@ -158,7 +155,6 @@ export default async function DashboardPage() {
         </div>
       </GlassCard>
 
-      {/* Stats Cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Mining Status"
@@ -190,9 +186,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Main Grid */}
       <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
-        {/* Earnings Chart */}
         <GlassCard className="p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -223,7 +217,6 @@ export default async function DashboardPage() {
         </GlassCard>
 
         <div className="space-y-5">
-          {/* Active Plan */}
           <GlassCard glow="cyan" className="p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-bold text-white">Active Plan</h2>
@@ -249,10 +242,7 @@ export default async function DashboardPage() {
                     <span>Contract validity</span>
                     <span className="font-semibold text-white">{planDaysLeft} days left</span>
                   </div>
-                  <ProgressBar
-                    className="mt-2"
-                    value={(planDaysLeft / Math.max(1, plan.validityDays)) * 100}
-                  />
+                  <ProgressBar className="mt-2" value={(planDaysLeft / Math.max(1, plan.validityDays)) * 100} />
                 </div>
               </>
             ) : (
@@ -260,7 +250,6 @@ export default async function DashboardPage() {
             )}
           </GlassCard>
 
-          {/* Daily Check-in */}
           <GlassCard className="p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-bold text-white">Daily Check-in</h2>
@@ -300,7 +289,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Referral Milestone */}
       <GlassCard className="p-5 sm:p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -335,7 +323,6 @@ export default async function DashboardPage() {
         </div>
       </GlassCard>
 
-      {/* Recent Transactions */}
       <GlassCard className="p-5 sm:p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -373,7 +360,7 @@ export default async function DashboardPage() {
                           )}
                         </span>
                         <span className="text-sm font-semibold text-white">
-                          {tx.type} {/* ✅ Directly show type, no TX_LABELS */}
+                          {tx.type} {/* ✅ Directly showing type */}
                         </span>
                       </div>
                     </td>
