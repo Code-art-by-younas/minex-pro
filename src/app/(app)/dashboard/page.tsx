@@ -25,7 +25,7 @@ import {
   getTransactions,
   getWalletTotals,
 } from "@/lib/data";
-import { dateLabel, hashRate, n, pkr, TX_LABELS } from "@/lib/utils"; // ✅ TX_LABELS added
+import { dateLabel, hashRate, n, pkr } from "@/lib/utils"; // ✅ TX_LABELS removed
 import { db } from "@/db";
 import { dailyCheckins, users } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -62,7 +62,6 @@ export default async function DashboardPage() {
     )
     .limit(1);
 
-  // ✅ Get checkin streak
   const streakData = await db
     .select()
     .from(dailyCheckins)
@@ -92,7 +91,6 @@ export default async function DashboardPage() {
     ? Math.max(0, Math.ceil((new Date(user.planExpiresAt).getTime() - Date.now()) / 86_400_000))
     : 0;
 
-  // ✅ Referral milestone progress
   const verifiedReferrals = await db
     .select()
     .from(users)
@@ -375,7 +373,7 @@ export default async function DashboardPage() {
                           )}
                         </span>
                         <span className="text-sm font-semibold text-white">
-                          {TX_LABELS[tx.type] ?? tx.type}
+                          {tx.type} {/* ✅ Directly show type, no TX_LABELS */}
                         </span>
                       </div>
                     </td>
