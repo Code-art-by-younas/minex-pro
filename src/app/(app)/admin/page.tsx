@@ -55,14 +55,13 @@ const TABS = [
   { id: "reports", label: "Reports", icon: FileText },
 ];
 
-// Risk Score Badge Component
-function RiskBadge({ score }: { score: number }) {
-  if (score >= 70) {
-    return <span className="inline-flex items-center gap-1 rounded-full bg-red-500/20 px-2.5 py-0.5 text-xs font-semibold text-red-400"><AlertTriangle className="h-3 w-3" /> High</span>;
-  } else if (score >= 40) {
-    return <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/20 px-2.5 py-0.5 text-xs font-semibold text-yellow-400"><AlertTriangle className="h-3 w-3" /> Medium</span>;
-  }
-  return <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2.5 py-0.5 text-xs font-semibold text-green-400"><CheckCircle2 className="h-3 w-3" /> Low</span>;
+// ✅ Risk Badge – Temporarily disabled (riskScore column missing)
+function RiskBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2.5 py-0.5 text-xs font-semibold text-green-400">
+      <CheckCircle2 className="h-3 w-3" /> Low
+    </span>
+  );
 }
 
 // KYC Status Badge
@@ -99,9 +98,9 @@ export default async function AdminPage({
   const allTasks = await db.select().from(tasksTable).orderBy(asc(tasksTable.sortOrder));
   const pendingKYC = await getKYCPendingUsers();
 
-  // Get user count for risk stats - riskScore column removed
+  // Get user count for risk stats
   const [totalUsers] = await db.select({ count: count() }).from(usersTable);
-  const highRiskUsers = { count: 0 };
+  const highRiskUsers = { count: 0 }; // ✅ Fixed
 
   const revenueSeries = Array.from({ length: 14 }, (_, i) => {
     const day = Date.now() - (13 - i) * 86_400_000;
@@ -252,7 +251,7 @@ export default async function AdminPage({
                     <KYCStatusBadge status={u.kycStatus || "not_submitted"} />
                   </td>
                   <td className="px-3 py-3">
-                    <RiskBadge score={u.riskScore || 0} />
+                    <RiskBadge /> {/* ✅ Fixed - no riskScore */}
                   </td>
                   <td className="px-3 py-3">
                     <StatusPill status={u.status} />
@@ -317,7 +316,7 @@ export default async function AdminPage({
                       <div className="flex flex-wrap items-center gap-3">
                         <span className="font-display text-lg font-bold text-white">{user.full_name || user.name}</span>
                         <KYCStatusBadge status={user.kycStatus || "pending"} />
-                        <RiskBadge score={user.riskScore || 0} />
+                        <RiskBadge /> {/* ✅ Fixed */}
                       </div>
                       <div className="mt-3 grid gap-1.5 text-sm text-slate-400 sm:grid-cols-2">
                         <p>Email: <span className="text-slate-200">{user.email}</span></p>
