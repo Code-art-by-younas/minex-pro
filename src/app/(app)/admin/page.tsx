@@ -55,7 +55,7 @@ const TABS = [
   { id: "reports", label: "Reports", icon: FileText },
 ];
 
-// ✅ FIXED: RiskBadge without riskScore
+// ✅ RiskBadge without riskScore (always Low)
 function RiskBadge() {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2.5 py-0.5 text-xs font-semibold text-green-400">
@@ -98,7 +98,7 @@ export default async function AdminPage({
   const allTasks = await db.select().from(tasksTable).orderBy(asc(tasksTable.sortOrder));
   const pendingKYC = await getKYCPendingUsers();
 
-  // ✅ FIXED: riskScore removed completely
+  // ✅ No riskScore – just a placeholder
   const highRiskUsers = { count: 0 };
 
   const revenueSeries = Array.from({ length: 14 }, (_, i) => {
@@ -313,16 +313,15 @@ export default async function AdminPage({
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-display text-lg font-bold text-white">{user.full_name || user.name}</span>
+                        <span className="font-display text-lg font-bold text-white">{user.name}</span>
                         <KYCStatusBadge status={user.kycStatus || "pending"} />
                         <RiskBadge />
                       </div>
                       <div className="mt-3 grid gap-1.5 text-sm text-slate-400 sm:grid-cols-2">
                         <p>Email: <span className="text-slate-200">{user.email}</span></p>
                         <p>Phone: <span className="text-slate-200">{user.phone || "N/A"}</span></p>
-                        <p>CNIC: <span className="text-slate-200">{user.cnicNumber || "Not provided"}</span></p>
-                        <p>DOB: <span className="text-slate-200">{user.dob || "Not provided"}</span></p>
-                        <p className="col-span-2">Payment Account: <span className="text-slate-200">{user.paymentAccount || "Not provided"}</span></p>
+                        <p>KYC Doc Type: <span className="text-slate-200">{user.kycDocType || "N/A"}</span></p>
+                        <p>KYC Doc Number: <span className="text-slate-200">{user.kycDocNumber || "N/A"}</span></p>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2 lg:flex-col">
