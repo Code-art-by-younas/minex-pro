@@ -25,7 +25,7 @@ import {
   getTransactions,
   getWalletTotals,
 } from "@/lib/data";
-import { dateLabel, hashRate, n, pkr, TX_LABELS } from "@/lib/utils";
+import { dateLabel, hashRate, n, pkr } from "@/lib/utils";
 import { db } from "@/db";
 import { dailyCheckins, users } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -73,7 +73,8 @@ export default async function DashboardPage() {
   const streak = streakData[0]?.streak || 0;
   const hasCheckedIn = todayCheckin.length > 0;
 
-  const dailyProfit = n(plan?.dailyProfit);
+  // ✅ FIX: provide default when plan is null
+  const dailyProfit = n(plan?.dailyProfit ?? 0);
   const running = session ? new Date(session.endsAt).getTime() > Date.now() : false;
   const progress = session
     ? Math.min(
@@ -278,8 +279,8 @@ export default async function DashboardPage() {
                       {hasCheckedIn ? "Already Checked In" : "Claim Your Daily Bonus"}
                     </p>
                     <p className="text-xs text-slate-400">
-                      {hasCheckedIn
-                        ? `🔥 ${streak} day streak! Come back tomorrow.`
+                      {hasCheckedIn 
+                        ? `🔥 ${streak} day streak! Come back tomorrow.` 
                         : `+5 PKR • ${streak} day streak`}
                     </p>
                   </div>
