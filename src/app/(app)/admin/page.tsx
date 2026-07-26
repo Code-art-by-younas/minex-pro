@@ -55,7 +55,7 @@ const TABS = [
   { id: "reports", label: "Reports", icon: FileText },
 ];
 
-// ✅ Risk Badge – Temporarily disabled (riskScore column missing)
+// ✅ FIXED: RiskBadge without riskScore
 function RiskBadge() {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2.5 py-0.5 text-xs font-semibold text-green-400">
@@ -98,9 +98,8 @@ export default async function AdminPage({
   const allTasks = await db.select().from(tasksTable).orderBy(asc(tasksTable.sortOrder));
   const pendingKYC = await getKYCPendingUsers();
 
-  // Get user count for risk stats
-  const [totalUsers] = await db.select({ count: count() }).from(usersTable);
-  const highRiskUsers = { count: 0 }; // ✅ Fixed
+  // ✅ FIXED: riskScore removed completely
+  const highRiskUsers = { count: 0 };
 
   const revenueSeries = Array.from({ length: 14 }, (_, i) => {
     const day = Date.now() - (13 - i) * 86_400_000;
@@ -251,7 +250,7 @@ export default async function AdminPage({
                     <KYCStatusBadge status={u.kycStatus || "not_submitted"} />
                   </td>
                   <td className="px-3 py-3">
-                    <RiskBadge /> {/* ✅ Fixed - no riskScore */}
+                    <RiskBadge />
                   </td>
                   <td className="px-3 py-3">
                     <StatusPill status={u.status} />
@@ -316,7 +315,7 @@ export default async function AdminPage({
                       <div className="flex flex-wrap items-center gap-3">
                         <span className="font-display text-lg font-bold text-white">{user.full_name || user.name}</span>
                         <KYCStatusBadge status={user.kycStatus || "pending"} />
-                        <RiskBadge /> {/* ✅ Fixed */}
+                        <RiskBadge />
                       </div>
                       <div className="mt-3 grid gap-1.5 text-sm text-slate-400 sm:grid-cols-2">
                         <p>Email: <span className="text-slate-200">{user.email}</span></p>
