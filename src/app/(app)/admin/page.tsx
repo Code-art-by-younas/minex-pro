@@ -99,10 +99,8 @@ export default async function AdminPage({
   const allTasks = await db.select().from(tasksTable).orderBy(asc(tasksTable.sortOrder));
   const pendingKYC = await getKYCPendingUsers();
 
-  // Get user count for risk stats
+  // Get user count for risk stats - riskScore column removed
   const [totalUsers] = await db.select({ count: count() }).from(usersTable);
-
-  // ✅ FIXED: riskScore column removed to fix build error
   const highRiskUsers = { count: 0 };
 
   const revenueSeries = Array.from({ length: 14 }, (_, i) => {
