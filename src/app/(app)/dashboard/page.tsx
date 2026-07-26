@@ -25,7 +25,7 @@ import {
   getTransactions,
   getWalletTotals,
 } from "@/lib/data";
-import { dateLabel, hashRate, n, pkr } from "@/lib/utils";
+import { dateLabel, hashRate, n, pkr, TX_LABELS } from "@/lib/utils"; // ✅ TX_LABELS added
 import { db } from "@/db";
 import { dailyCheckins, users } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
   const streak = streakData[0]?.streak || 0;
   const hasCheckedIn = todayCheckin.length > 0;
 
-  // ✅ FIX: provide default when plan is null
+  // ✅ Provide default when plan is null
   const dailyProfit = n(plan?.dailyProfit ?? 0);
   const running = session ? new Date(session.endsAt).getTime() > Date.now() : false;
   const progress = session
