@@ -3,7 +3,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // ✅ Add this to prevent pg from being bundled
+  // ✅ Prevent pg from being bundled in browser
   serverExternalPackages: ['pg'],
 };
 
