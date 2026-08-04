@@ -3,9 +3,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // ✅ Add this to prevent pg from being bundled
+  serverExternalPackages: ['pg'],
 };
 
 export default nextConfig;
