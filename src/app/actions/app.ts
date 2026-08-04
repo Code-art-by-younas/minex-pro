@@ -14,6 +14,7 @@ import {
   users,
   dailyCheckins,
   referralRewards,
+  userPlans, // ✅ Added
 } from "@/db/schema";
 import { getCurrentUser, hashPassword, verifyPassword } from "@/lib/auth";
 import { getPlanById, getPlanBySlug } from "@/lib/data";
@@ -168,7 +169,7 @@ export async function claimRewardAction(): Promise<ActionState> {
 }
 
 // ============================================
-// PLAN ACTIONS
+// PLAN ACTIONS ✅ UPDATED
 // ============================================
 
 export async function purchasePlanAction(
@@ -187,6 +188,8 @@ export async function purchasePlanAction(
     return { ok: false, error: `Insufficient balance. Deposit at least ${(price - n(user.balance)).toFixed(2)} PKR.` };
 
   const now = new Date();
+
+  // ✅ 1. User update
   await db
     .update(users)
     .set({
@@ -198,6 +201,7 @@ export async function purchasePlanAction(
     })
     .where(eq(users.id, user.id));
 
+  // ✅ 2. Transaction record
   if (price > 0) {
     await db.insert(transactions).values({
       userId: user.id,
@@ -211,10 +215,27 @@ export async function purchasePlanAction(
     await payReferral(user.id, price, "plan purchase");
   }
 
+  // ✅ 3. userPlans table mein entry (NEW)
+  const totalReturn = price + (n(plan.dailyProfit) * n(plan.validityDays));
+  const planType = plan.slug.includes("monthly") ? "monthly" : "weekly";
+
+  await db.insert(userPlans).values({
+    userId: user.id,
+    planId: plan.id,
+    planType: planType,
+    investedAmount: price.toFixed(2),
+    expectedReturn: totalReturn.toFixed(2),
+    dailyEarning: n(plan.dailyProfit).toFixed(2),
+    startDate: now,
+    endDate: new Date(now.getTime() + plan.validityDays * 86_400_000),
+    status: "active",
+  });
+
+  // ✅ 4. Notification
   await db.insert(notifications).values({
     userId: user.id,
     title: `${plan.name} plan activated`,
-    body: `Your hash power is now ${plan.speed} GH/s for ${plan.validityDays} days.`,
+    body: `Your hash power is now ${plan.speed} GH/s for ${plan.validityDays} days. Total return: ${totalReturn.toFixed(2)} PKR.`,
     tone: "success",
   });
 
@@ -260,6 +281,7 @@ export async function submitDepositAction(
   revalidateApp();
   return { ok: true, message: "✅ Deposit submitted! Admin will review and credit your balance within 5-10 minutes." };
 }
+
 // ============================================
 // WITHDRAWAL ACTIONS
 // ============================================
