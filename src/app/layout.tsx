@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   title: "MineX Pro — Premium Cloud Crypto Mining Platform",
   description:
     "MineX Pro is a premium cloud mining simulation platform with live mining rigs, tiered hash-power plans, instant payouts, referral rewards and a full admin control center.",
+  // ✅ Coinzilla Verification
+  verification: {
+    other: {
+      coinzilla: "de4c20ee5f20ea9a0230a6cdb424d98b",
+    },
+  },
 };
 
 export const viewport: Viewport = {
@@ -18,6 +24,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
+        {/* ✅ Coinzilla Meta Tag */}
+        <meta name="coinzilla" content="de4c20ee5f20ea9a0230a6cdb424d98b" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
