@@ -20,6 +20,7 @@ import {
   Wallet,
   X,
   Download,
+  HelpCircle, // ✅ Added for Help & Support
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { cn, initials, pkr } from "@/lib/utils"; // ✅ Use pkr
@@ -53,6 +54,8 @@ const NAV = [
   { href: "/referral", label: "Referral", icon: Users },
   { href: "/tasks", label: "Tasks", icon: Gift },
   { href: "/profile", label: "Profile", icon: UserRound },
+  // ✅ Added Help & Support
+  { href: "/support", label: "Help & Support", icon: HelpCircle },
 ];
 
 const MOBILE_NAV = [
