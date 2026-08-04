@@ -14,8 +14,8 @@ export default async function PlansPage() {
   const user = await requireUser();
   const [allPlans, current] = await Promise.all([getPlans(), getPlanById(user.planId)]);
 
-  // Separate plans by type (weekly vs monthly)
-  const weeklyPlans = allPlans.filter((p) => p.slug.startsWith("weekly"));
+  // ✅ Separate plans by type (10 Days vs Monthly)
+  const tenDayPlans = allPlans.filter((p) => p.slug.startsWith("10days"));
   const monthlyPlans = allPlans.filter((p) => p.slug.startsWith("monthly"));
 
   return (
@@ -23,7 +23,7 @@ export default async function PlansPage() {
       <div>
         <h1 className="font-display text-2xl font-extrabold text-white sm:text-3xl">Mining Plans</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Choose your plan and start mining. Weekly = 100% profit • Monthly = 200% profit
+          Choose your plan and start mining. 10 Days = 100% – 150% profit • Monthly = 200% profit
         </p>
       </div>
 
@@ -53,97 +53,101 @@ export default async function PlansPage() {
         />
       </div>
 
-      {/* Weekly Plans Section */}
-      <div>
-        <div className="mb-4 flex items-center gap-3">
-          <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-400">
-            WEEKLY
-          </span>
-          <h2 className="font-display text-xl font-bold text-white">7 Days • 100% Profit</h2>
+      {/* ✅ 10 Days Plans Section */}
+      {tenDayPlans.length > 0 && (
+        <div>
+          <div className="mb-4 flex items-center gap-3">
+            <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-400">
+              10 DAYS
+            </span>
+            <h2 className="font-display text-xl font-bold text-white">10 Days • 100% – 150% Profit</h2>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {tenDayPlans.map((plan) => {
+              const isActive = current?.id === plan.id;
+              const affordable = n(user.balance) >= n(plan.price);
+              return (
+                <PlanCard
+                  key={plan.id}
+                  plan={plan}
+                  active={isActive}
+                  cta={
+                    isActive ? (
+                      <div className="rounded-xl border border-neon-500/40 bg-neon-500/10 py-3 text-center text-sm font-bold text-neon-400">
+                        Currently active
+                      </div>
+                    ) : affordable ? (
+                      <ActionButton
+                        action={purchasePlanAction}
+                        fields={{ planId: plan.id }}
+                        full
+                        refreshOnSuccess
+                        variant={plan.popular ? "primary" : "ghost"}
+                        pendingLabel="Activating…"
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                        Buy for {pkr(plan.price, 0)}
+                      </ActionButton>
+                    ) : (
+                      <ButtonLink href="/deposit" variant="subtle" full>
+                        Deposit {pkr(n(plan.price) - n(user.balance), 0)} more
+                      </ButtonLink>
+                    )
+                  }
+                />
+              );
+            })}
+          </div>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {weeklyPlans.map((plan) => {
-            const isActive = current?.id === plan.id;
-            const affordable = n(user.balance) >= n(plan.price);
-            return (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                active={isActive}
-                cta={
-                  isActive ? (
-                    <div className="rounded-xl border border-neon-500/40 bg-neon-500/10 py-3 text-center text-sm font-bold text-neon-400">
-                      Currently active
-                    </div>
-                  ) : affordable ? (
-                    <ActionButton
-                      action={purchasePlanAction}
-                      fields={{ planId: plan.id }}
-                      full
-                      refreshOnSuccess
-                      variant={plan.popular ? "primary" : "ghost"}
-                      pendingLabel="Activating…"
-                    >
-                      <ShoppingCart className="h-4 w-4" />
-                      Buy for {pkr(plan.price, 0)}
-                    </ActionButton>
-                  ) : (
-                    <ButtonLink href="/deposit" variant="subtle" full>
-                      Deposit {pkr(n(plan.price) - n(user.balance), 0)} more
-                    </ButtonLink>
-                  )
-                }
-              />
-            );
-          })}
-        </div>
-      </div>
+      )}
 
-      {/* Monthly Plans Section */}
-      <div>
-        <div className="mb-4 flex items-center gap-3">
-          <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400">
-            MONTHLY
-          </span>
-          <h2 className="font-display text-xl font-bold text-white">30 Days • 200% Profit</h2>
+      {/* ✅ Monthly Plans Section */}
+      {monthlyPlans.length > 0 && (
+        <div>
+          <div className="mb-4 flex items-center gap-3">
+            <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400">
+              MONTHLY
+            </span>
+            <h2 className="font-display text-xl font-bold text-white">30 Days • 200% Profit</h2>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {monthlyPlans.map((plan) => {
+              const isActive = current?.id === plan.id;
+              const affordable = n(user.balance) >= n(plan.price);
+              return (
+                <PlanCard
+                  key={plan.id}
+                  plan={plan}
+                  active={isActive}
+                  cta={
+                    isActive ? (
+                      <div className="rounded-xl border border-neon-500/40 bg-neon-500/10 py-3 text-center text-sm font-bold text-neon-400">
+                        Currently active
+                      </div>
+                    ) : affordable ? (
+                      <ActionButton
+                        action={purchasePlanAction}
+                        fields={{ planId: plan.id }}
+                        full
+                        refreshOnSuccess
+                        variant={plan.popular ? "primary" : "ghost"}
+                        pendingLabel="Activating…"
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                        Buy for {pkr(plan.price, 0)}
+                      </ActionButton>
+                    ) : (
+                      <ButtonLink href="/deposit" variant="subtle" full>
+                        Deposit {pkr(n(plan.price) - n(user.balance), 0)} more
+                      </ButtonLink>
+                    )
+                  }
+                />
+              );
+            })}
+          </div>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {monthlyPlans.map((plan) => {
-            const isActive = current?.id === plan.id;
-            const affordable = n(user.balance) >= n(plan.price);
-            return (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                active={isActive}
-                cta={
-                  isActive ? (
-                    <div className="rounded-xl border border-neon-500/40 bg-neon-500/10 py-3 text-center text-sm font-bold text-neon-400">
-                      Currently active
-                    </div>
-                  ) : affordable ? (
-                    <ActionButton
-                      action={purchasePlanAction}
-                      fields={{ planId: plan.id }}
-                      full
-                      refreshOnSuccess
-                      variant={plan.popular ? "primary" : "ghost"}
-                      pendingLabel="Activating…"
-                    >
-                      <ShoppingCart className="h-4 w-4" />
-                      Buy for {pkr(plan.price, 0)}
-                    </ActionButton>
-                  ) : (
-                    <ButtonLink href="/deposit" variant="subtle" full>
-                      Deposit {pkr(n(plan.price) - n(user.balance), 0)} more
-                    </ButtonLink>
-                  )
-                }
-              />
-            );
-          })}
-        </div>
-      </div>
+      )}
 
       {/* How It Works */}
       <GlassCard className="p-5 sm:p-6">
@@ -153,9 +157,9 @@ export default async function PlansPage() {
             <h3 className="font-display text-base font-bold text-white">How contracts work</h3>
             <ul className="mt-3 grid gap-2.5 text-xs text-slate-400 sm:grid-cols-2">
               <li>• Each contract fixes your hash power and cycle length for its full duration.</li>
-              <li>• Cycle payout = daily profit × (cycle hours ÷ 24), credited on claim.</li>
+              <li>• Investment + Profit automatically credited to your wallet upon completion.</li>
               <li>• Referrers earn 10% (level 1) and 3% (level 2) of every purchase.</li>
-              <li>• When a contract expires you automatically drop back to 5 GH/s.</li>
+              <li>• When a contract expires, you can reinvest or withdraw your earnings.</li>
             </ul>
           </div>
         </div>
