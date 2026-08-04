@@ -25,10 +25,10 @@ import {
   getTransactions,
   getWalletTotals,
 } from "@/lib/data";
-import { dateLabel, hashRate, n, pkr } from "@/lib/utils";
+import { dateLabel, hashRate, n, pkr, TX_LABELS } from "@/lib/utils";
 import { db } from "@/db";
-import { dailyCheckins, users } from "@/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { dailyCheckins, users, userPlans, plans } from "@/db/schema";
+import { eq, and, sql, desc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Dashboard — MineX Pro" };
@@ -44,6 +44,7 @@ export default async function DashboardPage() {
     getEarningsSeries(user.id),
   ]);
 
+  // ✅ Check if user already checked in today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
@@ -61,6 +62,7 @@ export default async function DashboardPage() {
     )
     .limit(1);
 
+  // ✅ Get checkin streak
   const streakData = await db
     .select()
     .from(dailyCheckins)
@@ -71,6 +73,7 @@ export default async function DashboardPage() {
   const streak = streakData[0]?.streak || 0;
   const hasCheckedIn = todayCheckin.length > 0;
 
+  // ✅ Provide default when plan is null
   const dailyProfit = n(plan?.dailyProfit ?? 0);
   const running = session ? new Date(session.endsAt).getTime() > Date.now() : false;
   const progress = session
@@ -89,6 +92,49 @@ export default async function DashboardPage() {
     ? Math.max(0, Math.ceil((new Date(user.planExpiresAt).getTime() - Date.now()) / 86_400_000))
     : 0;
 
+  // ✅ Get active user plan details from user_plans table
+  const activeUserPlan = await db
+    .select({
+      id: userPlans.id,
+      planId: userPlans.planId,
+      investedAmount: userPlans.investedAmount,
+      expectedReturn: userPlans.expectedReturn,
+      dailyEarning: userPlans.dailyEarning,
+      startDate: userPlans.startDate,
+      endDate: userPlans.endDate,
+      status: userPlans.status,
+      planName: plans.name,
+      planSlug: plans.slug,
+    })
+    .from(userPlans)
+    .leftJoin(plans, eq(userPlans.planId, plans.id))
+    .where(
+      and(
+        eq(userPlans.userId, user.id),
+        eq(userPlans.status, "active")
+      )
+    )
+    .orderBy(desc(userPlans.createdAt))
+    .limit(1);
+
+  const isTenDayPlan = activeUserPlan?.planSlug?.startsWith("10days") ?? false;
+  const planTypeLabel = isTenDayPlan ? "10 Days" : "Monthly";
+  const planDaysTotal = isTenDayPlan ? 10 : 30;
+
+  // ✅ Calculate plan progress (days completed)
+  let planProgress = 0;
+  if (activeUserPlan) {
+    const start = new Date(activeUserPlan.startDate).getTime();
+    const end = new Date(activeUserPlan.endDate).getTime();
+    const now = Date.now();
+    if (now >= end) {
+      planProgress = 100;
+    } else if (now > start) {
+      planProgress = ((now - start) / (end - start)) * 100;
+    }
+  }
+
+  // ✅ Referral milestone progress
   const verifiedReferrals = await db
     .select()
     .from(users)
@@ -121,7 +167,9 @@ export default async function DashboardPage() {
             <p className="mt-2 max-w-lg text-sm text-slate-400">
               {running
                 ? "Your rig is hashing right now. Come back when the cycle completes to claim your reward."
-                : "Your rig is idle — start a new mining cycle to keep the rewards flowing."}
+                : activeUserPlan
+                ? `Your ${planTypeLabel} plan is active. Earn daily rewards and reinvest to grow your portfolio.`
+                : "Your rig is idle — choose a plan to start mining."}
             </p>
             <div className="mt-5 flex flex-wrap gap-2.5">
               <ButtonLink href="/deposit" size="md">
@@ -130,8 +178,8 @@ export default async function DashboardPage() {
               <ButtonLink href="/withdraw" variant="ghost" size="md">
                 <ArrowUpRight className="h-4 w-4" /> Withdraw
               </ButtonLink>
-              <ButtonLink href="/mining" variant="subtle" size="md">
-                <Pickaxe className="h-4 w-4" /> Mining rig
+              <ButtonLink href="/plans" variant="subtle" size="md">
+                <Pickaxe className="h-4 w-4" /> View Plans
               </ButtonLink>
             </div>
           </div>
@@ -155,18 +203,18 @@ export default async function DashboardPage() {
         </div>
       </GlassCard>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard
           label="Mining Status"
-          value={running ? "Active" : session ? "Claimable" : "Idle"}
-          hint={session ? `${session.planName} • ${hashRate(session.power)}` : "Start a cycle"}
+          value={running ? "Active" : session ? "Claimable" : activeUserPlan ? "Plan Active" : "Idle"}
+          hint={session ? `${session.planName} • ${hashRate(session.power)}` : activeUserPlan ? `${planTypeLabel} Plan` : "Choose a plan"}
           icon={<Cpu className="h-5 w-5" />}
-          accent={running ? "green" : "cyan"}
+          accent={running ? "green" : activeUserPlan ? "cyan" : "slate"}
         />
         <StatCard
           label="Mining Power"
           value={hashRate(user.miningPower)}
-          hint={plan ? `${plan.sessionHours}h cycles` : "Free tier"}
+          hint={plan ? `${plan.sessionHours}h cycles` : "5 GH/s"}
           icon={<Gauge className="h-5 w-5" />}
           accent="cyan"
         />
@@ -176,6 +224,13 @@ export default async function DashboardPage() {
           hint={`≈ ${pkr(dailyProfit * 30)} / month`}
           icon={<TrendingUp className="h-5 w-5" />}
           accent="green"
+        />
+        <StatCard
+          label="Plan Progress"
+          value={`${Math.round(planProgress)}%`}
+          hint={activeUserPlan ? `${planDaysTotal} days plan` : "No active plan"}
+          icon={<Clock3 className="h-5 w-5" />}
+          accent="amber"
         />
         <StatCard
           label="Referral Earnings"
@@ -219,34 +274,45 @@ export default async function DashboardPage() {
         <div className="space-y-5">
           <GlassCard glow="cyan" className="p-5 sm:p-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-bold text-white">Active Plan</h2>
+              <h2 className="font-display text-lg font-bold text-white">
+                {activeUserPlan ? "Active Plan" : "No Active Plan"}
+              </h2>
               <Link href="/plans" className="text-xs font-semibold text-neon-400 hover:underline">
-                Upgrade
+                {activeUserPlan ? "Upgrade" : "Choose Plan"}
               </Link>
             </div>
-            {plan ? (
+            {activeUserPlan ? (
               <>
                 <div className="mt-4 flex items-center gap-3">
                   <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-neon-500/30 to-aqua-500/10 ring-1 ring-white/10">
                     <Coins className="h-5 w-5 text-neon-400" />
                   </span>
                   <div>
-                    <p className="font-display text-xl font-bold text-white">{plan.name}</p>
+                    <p className="font-display text-xl font-bold text-white">{activeUserPlan.planName}</p>
                     <p className="text-xs text-slate-500">
-                      {hashRate(plan.speed)} • {plan.sessionHours}h cycles
+                      {isTenDayPlan ? "10 Days" : "30 Days"} • Daily: {pkr(activeUserPlan.dailyEarning)}
                     </p>
                   </div>
                 </div>
                 <div className="mt-5">
                   <div className="flex justify-between text-xs text-slate-400">
-                    <span>Contract validity</span>
-                    <span className="font-semibold text-white">{planDaysLeft} days left</span>
+                    <span>Investment: <span className="font-semibold text-white">{pkr(activeUserPlan.investedAmount)}</span></span>
+                    <span>Expected Return: <span className="font-semibold text-neon-400">{pkr(activeUserPlan.expectedReturn)}</span></span>
                   </div>
-                  <ProgressBar className="mt-2" value={(planDaysLeft / Math.max(1, plan.validityDays)) * 100} />
+                  <div className="mt-3">
+                    <div className="flex justify-between text-xs text-slate-400">
+                      <span>Plan Progress</span>
+                      <span className="font-semibold text-white">{Math.round(planProgress)}%</span>
+                    </div>
+                    <ProgressBar className="mt-2" value={planProgress} />
+                  </div>
                 </div>
               </>
             ) : (
-              <EmptyState title="No active plan" hint="Activate a contract to unlock higher hash power." />
+              <EmptyState 
+                title="No active plan" 
+                hint="Choose a 10 Days or Monthly plan to start earning." 
+              />
             )}
           </GlassCard>
 
@@ -360,7 +426,7 @@ export default async function DashboardPage() {
                           )}
                         </span>
                         <span className="text-sm font-semibold text-white capitalize">
-                          {tx.type}
+                          {TX_LABELS[tx.type] ?? tx.type}
                         </span>
                       </div>
                     </td>
