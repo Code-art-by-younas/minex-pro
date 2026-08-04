@@ -2,14 +2,10 @@
 
 import { useState } from "react";
 import { Send, Sparkles, Loader2 } from "lucide-react";
-import { getAISuggestion } from "@/lib/ai-support";
 import { submitSupportTicket } from "@/app/actions/support";
+import { getAISuggestion } from "@/app/actions/ai";
 
-interface AIAssistantProps {
-  userId: number;
-}
-
-export function AIAssistant({ userId }: AIAssistantProps) {
+export function AIAssistant({ userId }: { userId: number }) {
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,7 +20,6 @@ export function AIAssistant({ userId }: AIAssistantProps) {
       const suggestion = await getAISuggestion(userId, message);
       setResponse(suggestion);
 
-      // Auto-create ticket if issue persists
       if (suggestion.includes('Please provide more details') || suggestion.includes('contact support')) {
         const formData = new FormData();
         formData.append('category', 'other');
