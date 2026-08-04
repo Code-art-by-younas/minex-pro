@@ -14,7 +14,6 @@ export interface IssueAnalysis {
 export async function detectUserIssues(userId: number): Promise<IssueAnalysis[]> {
   const issues: IssueAnalysis[] = [];
 
-  // 1. Check KYC Status
   const [user] = await db.select().from(users).where(eq(users.id, userId));
   if (user.kycStatus === 'not_submitted') {
     issues.push({
@@ -42,7 +41,6 @@ export async function detectUserIssues(userId: number): Promise<IssueAnalysis[]>
     });
   }
 
-  // 2. Check Balance
   const balance = parseFloat(user.balance);
   if (balance < 100) {
     issues.push({
@@ -54,7 +52,6 @@ export async function detectUserIssues(userId: number): Promise<IssueAnalysis[]>
     });
   }
 
-  // 3. Check Active Plan
   const activePlan = await db
     .select()
     .from(userPlans)
@@ -76,7 +73,6 @@ export async function detectUserIssues(userId: number): Promise<IssueAnalysis[]>
     });
   }
 
-  // 4. Check Pending Withdrawals
   const pendingWithdrawals = await db
     .select({ count: count() })
     .from(transactions)
@@ -98,7 +94,6 @@ export async function detectUserIssues(userId: number): Promise<IssueAnalysis[]>
     });
   }
 
-  // 5. Check Mining Sessions
   const runningSessions = await db
     .select({ count: count() })
     .from(miningSessions)
@@ -125,7 +120,6 @@ export async function detectUserIssues(userId: number): Promise<IssueAnalysis[]>
 export async function getAISuggestion(userId: number, issueText: string): Promise<string> {
   const issues = await detectUserIssues(userId);
   
-  // Check if issue matches any detected problem
   for (const issue of issues) {
     if (issueText.toLowerCase().includes(issue.category) || 
         issueText.toLowerCase().includes('problem') ||
@@ -134,7 +128,6 @@ export async function getAISuggestion(userId: number, issueText: string): Promis
     }
   }
 
-  // Default suggestions based on keywords
   const keywords: Record<string, string> = {
     'deposit': 'Go to Deposit page → Select Easypaisa/JazzCash/Bank → Send payment → Upload screenshot. Approval takes 5-10 minutes.',
     'withdraw': 'Go to Withdraw page → Select method → Enter amount → Submit. KYC required. Processing 24-48 hours.',
