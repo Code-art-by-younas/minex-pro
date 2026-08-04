@@ -144,6 +144,40 @@ export const userPlans = pgTable("user_plans", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// ============================================
+// ✅ NEW: SUPPORT TICKETS TABLE
+// ============================================
+export const supportTickets = pgTable("support_tickets", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  category: text("category").notNull(), // 'deposit', 'withdraw', 'kyc', 'mining', 'plans', 'referral', 'account', 'other'
+  priority: text("priority").notNull().default("medium"), // 'low', 'medium', 'high', 'urgent'
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: text("status").notNull().default("open"), // 'open', 'in_progress', 'resolved', 'closed'
+  aiSuggestion: text("ai_suggestion"),
+  adminResponse: text("admin_response"),
+  resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ============================================
+// ✅ NEW: FAQ ARTICLES TABLE
+// ============================================
+export const faqArticles = pgTable("faq_articles", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  category: text("category").notNull(), // 'deposit', 'withdraw', 'kyc', 'mining', 'plans', 'account', 'general'
+  content: text("content").notNull(),
+  views: integer("views").notNull().default(0),
+  helpful: integer("helpful").notNull().default(0),
+  notHelpful: integer("not_helpful").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   slug: text("slug").notNull().unique(),
@@ -198,3 +232,5 @@ export type NotificationRow = typeof notifications.$inferSelect;
 export type ReferralReward = typeof referralRewards.$inferSelect;
 export type DailyCheckin = typeof dailyCheckins.$inferSelect;
 export type UserPlan = typeof userPlans.$inferSelect;
+export type SupportTicket = typeof supportTickets.$inferSelect;
+export type FaqArticle = typeof faqArticles.$inferSelect;
