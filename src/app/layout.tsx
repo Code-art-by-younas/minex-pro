@@ -6,15 +6,15 @@ export const metadata: Metadata = {
   title: "MineX Pro — Premium Cloud Crypto Mining Platform",
   description:
     "MineX Pro is a premium cloud mining simulation platform with live mining rigs, tiered hash-power plans, instant payouts, referral rewards and a full admin control center.",
-  // ✅ Coinzilla Verification (Ye automatically <meta> tag bana dega)
   verification: {
     other: {
       coinzilla: "de4c20ee5f20ea9a0230a6cdb424d98b",
+      // ✅ Add Bitmedia verification
+      "bitmedia-site-verification": "ddd2584d25135bbcaa584c0104843aca",
     },
   },
-  // ✅ Professional Clean Favicon (Bina kisi .ico file ke)
   icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23131c2e'/%3E%3Ctext x='50' y='70' font-family='Arial%2Csans-serif' font-size='55' font-weight='bold' fill='%2300FFAA' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E"
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23131c2e'/%3E%3Ctext x='50' y='70' font-family='Arial%2Csans-serif' font-size='55' font-weight='bold' fill='%2300FFAA' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E",
   },
 };
 
@@ -28,8 +28,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
-        {/* ✅ Duplicate Coinzilla Meta Tag Hata diya gaya (Upar metadata me handle ho raha hai) */}
-        
+        {/* ✅ Bitmedia Meta Tag */}
+        <meta name="bitmedia-site-verification" content="ddd2584d25135bbcaa584c0104843aca" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
