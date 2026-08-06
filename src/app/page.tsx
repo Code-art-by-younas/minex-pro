@@ -1,3 +1,4 @@
+// src/app/page.tsx – Complete File Replace Karein
 import Link from "next/link";
 import {
   ArrowRight,
@@ -24,7 +25,6 @@ import { Faq, LandingNav, PriceTicker } from "@/components/landing";
 import { GlassCard, SectionTitle } from "@/components/ui";
 import { getSessionUserId } from "@/lib/auth";
 import { getPlans, getPlatformStats } from "@/lib/data";
-import { HeroGraphic } from "@/components/hero-graphic"; // ✅ New import
 
 export const dynamic = "force-dynamic";
 
@@ -92,6 +92,19 @@ export default async function LandingPage() {
     <div className="relative overflow-x-hidden">
       <LandingNav authed={authed} />
 
+      {/* ✅ AADS Ad Unit #2450786 – Homepage Top */}
+      <div className="mx-auto max-w-7xl px-4 py-4">
+        <div className="flex justify-center">
+          <div id="frame" style={{ width: "100%", margin: "auto", position: "relative", zIndex: 99998 }}>
+            <iframe
+              data-aa="2450786"
+              src="//acceptable.a-ads.com/2450786/?size=Adaptive"
+              style={{ border: 0, padding: 0, width: "70%", height: "auto", overflow: "hidden", display: "block", margin: "auto" }}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* HERO */}
       <section className="relative pt-28 sm:pt-32 lg:pt-36">
         <div className="pointer-events-none absolute inset-0 grid-lines" />
@@ -140,12 +153,15 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          {/* ✅ REPLACED IMAGE WITH ANIMATED GRAPHIC */}
           <div className="relative animate-rise delay-2">
             <div className="relative mx-auto max-w-lg">
               <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-tr from-neon-500/20 via-transparent to-aqua-500/25 blur-2xl" />
               <GlassCard glow="cyan" className="relative overflow-hidden rounded-3xl p-3">
-                <HeroGraphic />
+                <img
+                  src="/images/hero-rig.png"
+                  alt="MineX Pro mining rig"
+                  className="h-auto w-full rounded-2xl object-cover"
+                />
               </GlassCard>
 
               <div className="glass absolute -left-3 top-8 hidden w-44 rounded-2xl p-3.5 animate-float sm:block">
@@ -174,6 +190,19 @@ export default async function LandingPage() {
       </section>
 
       <PriceTicker />
+
+      {/* ✅ AADS Ad Unit #2450786 – Homepage Bottom */}
+      <div className="mx-auto max-w-7xl px-4 py-4">
+        <div className="flex justify-center">
+          <div id="frame" style={{ width: "100%", margin: "auto", position: "relative", zIndex: 99998 }}>
+            <iframe
+              data-aa="2450786"
+              src="//acceptable.a-ads.com/2450786/?size=Adaptive"
+              style={{ border: 0, padding: 0, width: "70%", height: "auto", overflow: "hidden", display: "block", margin: "auto" }}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* STATS */}
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
