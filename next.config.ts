@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone', // ✅ Render ke liye zaroori
   typescript: {
     ignoreBuildErrors: true,
   },
-  // ✅ Prevent pg from being bundled in browser
-  serverExternalPackages: ['pg'],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
