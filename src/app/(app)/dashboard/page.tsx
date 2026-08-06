@@ -29,6 +29,7 @@ import { dateLabel, hashRate, n, pkr, TX_LABELS } from "@/lib/utils";
 import { db } from "@/db";
 import { dailyCheckins, users, userPlans, plans } from "@/db/schema";
 import { eq, and, sql, desc } from "drizzle-orm";
+import { AdBanner } from "@/components/AdBanner"; // ✅ AADS Ad
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Dashboard — MineX Pro" };
@@ -153,6 +154,9 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
+      {/* ✅ AADS Ad Unit #2450786 – Dashboard Top */}
+      <AdBanner />
+
       <GlassCard glow="green" className="relative overflow-hidden p-6 sm:p-8">
         <div className="pointer-events-none absolute inset-0 grid-lines opacity-50" />
         <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-neon-500/15 blur-3xl" />
@@ -448,6 +452,9 @@ export default async function DashboardPage() {
           )}
         </div>
       </GlassCard>
+
+      {/* ✅ AADS Ad Unit #2450786 – Dashboard Bottom */}
+      <AdBanner />
     </div>
   );
 }
