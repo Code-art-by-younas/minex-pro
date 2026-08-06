@@ -1,4 +1,3 @@
-// src/app/page.tsx – Complete File Replace Karein
 import Link from "next/link";
 import {
   ArrowRight,
@@ -25,6 +24,7 @@ import { Faq, LandingNav, PriceTicker } from "@/components/landing";
 import { GlassCard, SectionTitle } from "@/components/ui";
 import { getSessionUserId } from "@/lib/auth";
 import { getPlans, getPlatformStats } from "@/lib/data";
+import { AdBanner } from "@/components/AdBanner"; // ✅ AADS Ad
 
 export const dynamic = "force-dynamic";
 
@@ -93,16 +93,8 @@ export default async function LandingPage() {
       <LandingNav authed={authed} />
 
       {/* ✅ AADS Ad Unit #2450786 – Homepage Top */}
-      <div className="mx-auto max-w-7xl px-4 py-4">
-        <div className="flex justify-center">
-          <div id="frame" style={{ width: "100%", margin: "auto", position: "relative", zIndex: 99998 }}>
-            <iframe
-              data-aa="2450786"
-              src="//acceptable.a-ads.com/2450786/?size=Adaptive"
-              style={{ border: 0, padding: 0, width: "70%", height: "auto", overflow: "hidden", display: "block", margin: "auto" }}
-            />
-          </div>
-        </div>
+      <div className="mx-auto max-w-7xl px-4 pt-4">
+        <AdBanner />
       </div>
 
       {/* HERO */}
@@ -192,16 +184,8 @@ export default async function LandingPage() {
       <PriceTicker />
 
       {/* ✅ AADS Ad Unit #2450786 – Homepage Bottom */}
-      <div className="mx-auto max-w-7xl px-4 py-4">
-        <div className="flex justify-center">
-          <div id="frame" style={{ width: "100%", margin: "auto", position: "relative", zIndex: 99998 }}>
-            <iframe
-              data-aa="2450786"
-              src="//acceptable.a-ads.com/2450786/?size=Adaptive"
-              style={{ border: 0, padding: 0, width: "70%", height: "auto", overflow: "hidden", display: "block", margin: "auto" }}
-            />
-          </div>
-        </div>
+      <div className="mx-auto max-w-7xl px-4 pb-4">
+        <AdBanner />
       </div>
 
       {/* STATS */}
