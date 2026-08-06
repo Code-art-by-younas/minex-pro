@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   verification: {
     other: {
       coinzilla: "de4c20ee5f20ea9a0230a6cdb424d98b",
-      // ✅ Add Bitmedia verification
-      "bitmedia-site-verification": "ddd2584d25135bbcaa584c0104843aca",
     },
   },
   icons: {
@@ -28,8 +26,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
-        {/* ✅ Bitmedia Meta Tag */}
-        <meta name="bitmedia-site-verification" content="ddd2584d25135bbcaa584c0104843aca" />
+        {/* ✅ Only Coinzilla meta tag – Bitmedia removed */}
+        <meta name="coinzilla" content="de4c20ee5f20ea9a0230a6cdb424d98b" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
