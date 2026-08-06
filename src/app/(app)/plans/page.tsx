@@ -6,6 +6,7 @@ import { purchasePlanAction } from "@/app/actions/app";
 import { requireUser } from "@/lib/auth";
 import { getPlanById, getPlans } from "@/lib/data";
 import { dayLabel, hashRate, n, pkr } from "@/lib/utils";
+import { AdBanner } from "@/components/AdBanner"; // ✅ AADS Ad
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Mining Plans — MineX Pro" };
@@ -20,6 +21,9 @@ export default async function PlansPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
+      {/* ✅ AADS Ad Unit #2450786 – Plans Page Top */}
+      <AdBanner />
+
       <div>
         <h1 className="font-display text-2xl font-extrabold text-white sm:text-3xl">Mining Plans</h1>
         <p className="mt-1 text-sm text-slate-400">
@@ -164,6 +168,9 @@ export default async function PlansPage() {
           </div>
         </div>
       </GlassCard>
+
+      {/* ✅ AADS Ad Unit #2450786 – Plans Page Bottom */}
+      <AdBanner />
     </div>
   );
 }
